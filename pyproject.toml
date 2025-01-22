@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "meta-pedidodia"
+version = "0.1.0"
+description = ""
+authors = ["Diego Lourencine <diegolourencine@sost.com.br>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+streamlit = "^1.41.1"
+cx-oracle = "^8.3.0"
+pandas = "^2.2.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
