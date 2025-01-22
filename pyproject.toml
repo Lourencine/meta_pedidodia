@@ -15,3 +15,10 @@ pandas = "^2.2.3"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[env]
+DB_USER = "CONSULTAPOWERBI"
+DB_PASSWORD = "S0STQUERYPB"
+DB_HOST = "192.168.254.200"
+DB_PORT = "1521"
+DB_SERVICE_NAME = "DBPROD"

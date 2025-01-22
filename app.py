@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import cx_Oracle
 import streamlit as st
@@ -30,9 +31,16 @@ def style_metric_cards(border_left_color="#3e4095"):
 
 @st.cache_data
 def carregar_dados(query):
-    # Conectar ao banco e carregar os dados
+    # Conectar ao banco de dados usando variáveis de ambiente
+    dsn_tns = cx_Oracle.makedsn(
+        os.getenv("DB_HOST"),
+        os.getenv("DB_PORT"),
+        service_name=os.getenv("DB_SERVICE_NAME")
+    )
     conexao = cx_Oracle.connect(
-        'CONSULTAPOWERBI/S0STQUERYPB@192.168.254.200:1521/DBPROD'
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        dsn=dsn_tns
     )
     df = pd.read_sql(query, conexao)
     conexao.close()
@@ -50,12 +58,14 @@ def main():
 
     start_time = time.time()
     df = carregar_dados(query)
-    st.write(f"Tempo para carregar dados: {
-             time.time() - start_time:.2f} segundos")
+    st.write(f"Tempo para carregar dados: {time.time() - start_time:.2f} segundos")
 
     if df.empty:
         st.warning("Nenhum dado encontrado para os critérios informados.")
         return
+
+    # O resto do código permanece inalterado...
+
 
     # Agrupando os dados
     df_agrupado = df.groupby(['DATA', 'CODSUPERVISOR', 'SUPERVISOR', 'CODUSUR', 'NOME'], as_index=False).agg({
