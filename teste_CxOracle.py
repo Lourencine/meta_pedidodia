@@ -1,7 +1,7 @@
 import cx_Oracle
 
 try:
-    oracle_client_path = r"C:\oraclexe\app\oracle\product\11.2.0\server\bin"
+    oracle_client_path = r"C:\oracle\instantclient"
     cx_Oracle.init_oracle_client(lib_dir=oracle_client_path)
 
     dsn_tns = cx_Oracle.makedsn("192.168.254.200", "1521", service_name="DBPROD")
