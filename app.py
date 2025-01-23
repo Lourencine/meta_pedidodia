@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-import cx_Oracle
+import oracledb  # Substituindo cx_Oracle por python-oracledb
 import streamlit as st
 import time
 
@@ -33,15 +33,25 @@ def style_metric_cards(border_left_color="#3e4095"):
 def carregar_dados(query):
     try:
         # Configurar a conexão com o Oracle
-        dsn_tns = cx_Oracle.makedsn("192.168.254.200", "1521", service_name="DBPROD")
-        conexao = cx_Oracle.connect(user="CONSULTAPOWERBI", password="S0STQUERYPB", dsn=dsn_tns)
+        dsn_tns = oracledb.makedsn(
+            "192.168.254.200",  # Endereço do servidor
+            1521,  # Porta do Oracle
+            service_name="DBPROD"  # Nome do serviço
+        )
+
+        # Conexão com o banco de dados
+        conexao = oracledb.connect(
+            user="CONSULTAPOWERBI", 
+            password="S0STQUERYPB", 
+            dsn=dsn_tns
+        )
 
         # Executar a consulta e carregar os dados no DataFrame
         df = pd.read_sql(query, conexao)
         conexao.close()
         return df
 
-    except cx_Oracle.DatabaseError as e:
+    except oracledb.DatabaseError as e:
         error, = e.args
         st.error(f"Erro ao conectar ao banco de dados: {error.message}")
         return pd.DataFrame()
@@ -132,7 +142,8 @@ def main():
         filtro_nomerca = st.text_input("Filtrar por NomeRca:")
 
     # Aplicar os filtros
-    df_filtrado = aplicar_filtros(df_agrupado, filtro_data, filtro_supervisor, filtro_nomerca)
+    df_filtrado = aplicar_filtros(
+        df_agrupado, filtro_data, filtro_supervisor, filtro_nomerca)
 
     if df_filtrado.empty:
         st.warning("Nenhum dado encontrado após aplicar os filtros.")
