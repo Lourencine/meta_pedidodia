@@ -32,7 +32,11 @@ def style_metric_cards(border_left_color="#3e4095"):
 @st.cache_data
 def carregar_dados(query):
     try:
-        # Configurar a conexão com o Oracle
+        # Habilitar o modo Thick (necessário para versões antigas do Oracle)
+        oracledb.init_oracle_client(
+            lib_dir="C:\\oracle\\instantclient")  # Ajuste o caminho
+
+        # Configurar o DSN
         dsn_tns = oracledb.makedsn(
             "192.168.254.200",  # Endereço do servidor
             1521,  # Porta do Oracle
@@ -41,10 +45,11 @@ def carregar_dados(query):
 
         # Conexão com o banco de dados
         conexao = oracledb.connect(
-            user="CONSULTAPOWERBI", 
-            password="S0STQUERYPB", 
+            user="CONSULTAPOWERBI",
+            password="S0STQUERYPB",
             dsn=dsn_tns
         )
+
 
         # Executar a consulta e carregar os dados no DataFrame
         df = pd.read_sql(query, conexao)
