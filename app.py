@@ -34,7 +34,7 @@ def carregar_dados(query):
     try:
         # Habilitar o modo Thick (necessário para versões antigas do Oracle)
         oracledb.init_oracle_client(
-            lib_dir=r"C:\oracle\instantclient_21_9")  # Ajuste o caminho
+            lib_dir=r"C:\oracle\instantclient")  # Ajuste o caminho
 
 
         # Configurar o DSN
