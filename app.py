@@ -36,6 +36,7 @@ def carregar_dados(query):
         oracledb.init_oracle_client(
             lib_dir=r"C:\oracle\instantclient_21_9")  # Ajuste o caminho
 
+
         # Configurar o DSN
         dsn_tns = oracledb.makedsn(
             "192.168.254.200",  # Endereço do servidor
@@ -141,7 +142,7 @@ def main():
 
     # Filtros na barra lateral
     with st.sidebar:
-        st.image("E:/GitHub_Workspace/Projetos/MetaPedidoDia/LOGO SOST NOVO.png", use_container_width=True)
+        st.image("C:/GitHub_Workspace/meta_pedidodia/LogoSost.png", use_container_width=True)
         filtro_data = st.date_input("Filtrar por Data")
         filtro_supervisor = st.text_input("Filtrar por Supervisor:")
         filtro_nomerca = st.text_input("Filtrar por NomeRca:")
