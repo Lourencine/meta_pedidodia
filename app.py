@@ -3,6 +3,13 @@ import pandas as pd
 import oracledb  # Substituindo cx_Oracle por python-oracledb
 import streamlit as st
 import time
+from datetime import datetime, timedelta
+
+
+def reload_page_with_params(**params):
+    """Força a página a recarregar ao definir parâmetros na URL."""
+    st.experimental_set_query_params(**params)
+    st.stop()
 
 
 def formatar_numero(valor):
@@ -32,6 +39,7 @@ def style_metric_cards(border_left_color="#3e4095"):
 @st.cache_data
 def carregar_dados(query):
     try:
+<<<<<<< HEAD:app/app.py
         # Habilitar o modo Thick (necessário para versões antigas do Oracle)
         oracledb.init_oracle_client(
             lib_dir=r"C:\oracle\instantclient_21_16")  # Ajuste o caminho
@@ -51,6 +59,11 @@ def carregar_dados(query):
         )
 
         # Executar a consulta e carregar os dados no DataFrame
+=======
+        oracledb.init_oracle_client(lib_dir=r"C:\oracle\instantclient")  # Ajuste o caminho
+        dsn_tns = oracledb.makedsn("192.168.254.200", 1521, service_name="DBPROD")
+        conexao = oracledb.connect(user="CONSULTAPOWERBI", password="S0STQUERYPB", dsn=dsn_tns)
+>>>>>>> 9ecfb98de3fd8772ce0c7402c5a320858dc8ca37:app.py
         df = pd.read_sql(query, conexao)
         conexao.close()
         return df
@@ -86,7 +99,7 @@ def aplicar_filtros(df, filtro_data, filtro_supervisor, filtro_nomerca):
 def exibir_metricas(df):
     total_meta = round(df['VLVENDAPREV'].sum(), 2)
     total_valorliquido = round(df['VL_LIQ_DSV_FAT'].sum(), 2)
-    total_metadia = round(df['VL_LIQ_DSV_PED'].sum(), 2)
+    total_valorpedido = round(df['VL_LIQ_DSV_PED'].sum(), 2)
     total_gapdia = round(df['GAP_DIA'].sum(), 2)
     total_metanova = round(df['META_NOVA'].sum(), 2)
 
@@ -100,7 +113,7 @@ def exibir_metricas(df):
         st.metric("R$ VALOR FATURADO", formatar_numero(total_valorliquido))
 
     with col3:
-        st.metric("R$ METADIA", formatar_numero(total_metadia))
+        st.metric("R$ PEDIDOS", formatar_numero(total_valorpedido))
 
     with col4:
         st.metric("R$ GAP DIA", formatar_numero(total_gapdia))
@@ -111,6 +124,33 @@ def exibir_metricas(df):
 
 def main():
     st.title("Tabela de Vendas 📊")
+
+    # Controle da última atualização
+    if "last_update" not in st.session_state:
+        st.session_state.last_update = datetime.now()
+
+    # Botão para atualização manual
+    update_button = st.sidebar.button("Atualizar Dados Manualmente")
+
+    # Definir intervalo para atualização automática (1 hora)
+    auto_refresh_interval = timedelta(hours=1)
+    now = datetime.now()
+
+    # Atualização automática
+    if now - st.session_state.last_update >= auto_refresh_interval:
+        st.session_state.last_update = now
+        st.session_state['reload'] = True
+        reload_page_with_params(reload="auto")
+
+    # Atualização manual
+    if update_button:
+        st.session_state.last_update = now
+        st.session_state['reload'] = True
+        reload_page_with_params(reload="manual")
+
+    # Exibir informações de atualização na barra lateral
+    st.sidebar.write(f"Última atualização: {st.session_state.last_update.strftime('%d/%m/%Y %H:%M:%S')}")
+    st.sidebar.write("A próxima atualização automática será em 1 hora.")
 
     # Consulta SQL
     query = """
@@ -128,28 +168,19 @@ def main():
         st.warning("Nenhum dado encontrado.")
         return
 
-    # Agrupamento de dados
-    df_agrupado = df.groupby(
-        ['DATA', 'CODSUPERVISOR', 'SUPERVISOR', 'CODUSUR', 'NOME'], as_index=False
-    ).agg({
-        'VLVENDAPREV': 'sum',
-        'VL_LIQ_DSV_FAT': 'sum',
-        'VL_LIQ_DSV_PED': 'sum',
-        'GAP_DIA': 'sum',
-        'META_NOVA': 'sum'
-    })
-
     # Filtros na barra lateral
     with st.sidebar:
+<<<<<<< HEAD:app/app.py
         st.image("E:/GitHub_Workspace/Projetos/MetaPedidoDia/LOGO SOST NOVO.png",
                  use_container_width=True)
+=======
+>>>>>>> 9ecfb98de3fd8772ce0c7402c5a320858dc8ca37:app.py
         filtro_data = st.date_input("Filtrar por Data")
         filtro_supervisor = st.text_input("Filtrar por Supervisor:")
         filtro_nomerca = st.text_input("Filtrar por NomeRca:")
 
     # Aplicar os filtros
-    df_filtrado = aplicar_filtros(
-        df_agrupado, filtro_data, filtro_supervisor, filtro_nomerca)
+    df_filtrado = aplicar_filtros(df, filtro_data, filtro_supervisor, filtro_nomerca)
 
     if df_filtrado.empty:
         st.warning("Nenhum dado encontrado após aplicar os filtros.")
